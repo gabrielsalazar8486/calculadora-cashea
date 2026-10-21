@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora Cashea</title>
+<style>
+:root {
+  --fondo: #f6f6f2; --tarjeta: #ffffff; --borde: #e3e3da; --texto: #1a1a16; --tenue: #68675c;
+  --marca: #fdfa3d; --negro: #14140f; --acento: #17171a; --acento-contraste: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #101018; --tarjeta: #191a24; --borde: #2c2e3d; --texto: #edeef5; --tenue: #9a9db1;
+    --acento: #fdfa3d; --acento-contraste: #14140f;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0 0 3rem; background: var(--fondo); color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5;
+}
+main { max-width: 26rem; margin: 0 auto; padding: 0 1rem; }
+.marca {
+  display: flex; align-items: center; gap: 0.5rem; background: var(--marca); color: var(--negro);
+  padding: 0.85rem 1rem; font-weight: 700; margin-bottom: 1.5rem;
+}
+.insignia {
+  width: 1.8rem; height: 1.8rem; border-radius: 7px; background: var(--negro); color: var(--marca);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+.ayuda { color: var(--tenue); font-size: 0.85rem; margin: 0 0 1.25rem; }
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px;
+  padding: 1.1rem; margin-bottom: 1.25rem;
+}
+label { display: block; font-weight: 600; margin-bottom: 0.35rem; font-size: 0.9rem; }
+.campo { margin-bottom: 1rem; }
+.campo:last-child { margin-bottom: 0; }
+input[type="text"] {
+  width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--borde); border-radius: 9px;
+  background: var(--tarjeta); color: var(--texto); font-size: 0.95rem; font-family: inherit;
+}
+input[type="range"] { flex: 1; }
+.fila-rango { display: flex; align-items: center; gap: 0.6rem; }
+.fila-rango strong { min-width: 3.2rem; text-align: right; }
+.pildoras { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.pildoras button {
+  border: 1px solid var(--borde); background: var(--tarjeta); color: var(--tenue);
+  border-radius: 999px; padding: 0.4rem 0.9rem; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer;
+}
+.pildoras button.activo { background: var(--negro); color: var(--marca); border-color: var(--negro); }
+.metricas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.metrica { border: 1px solid var(--borde); border-left: 3px solid var(--negro); border-radius: 10px; padding: 0.65rem 0.8rem; }
+.metrica .valor { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.metrica .bs { font-weight: 600; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.metrica .etiqueta { color: var(--tenue); font-size: 0.78rem; }
+.nota { color: var(--tenue); font-size: 0.75rem; }
+</style>
+</head>
+<body>
+<main>
+<div class="marca">
+<span class="insignia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><path d="M3.5 7.5 12 3l8.5 4.5-8.5 4.5-8.5-4.5Z"/><path d="M3.5 7.5v9L12 21l8.5-4.5v-9"/><path d="M12 12v9"/></svg></span>
+<span>My Online Storage</span>
+</div>
+
+<h1>Calculadora Cashea</h1>
+<p class="ayuda">Coloca el precio, mueve la inicial y elige las cuotas.</p>
+
+<div class="tarjeta">
+<div class="campo">
+<label for="precio">Precio del producto (USD)</label>
+<input id="precio" type="text" inputmode="decimal" placeholder="Ej. 350">
+</div>
+<div class="campo">
+<label for="inicial">% de inicial (entre 0% y 60%)</label>
+<div class="fila-rango"><input id="inicial" type="range" min="0" max="60"><strong id="v-inicial-pct"></strong></div>
+</div>
+<div class="campo">
+<label>Cuotas</label>
+<div id="cuotas" class="pildoras"></div>
+</div>
+</div>
+
+<div class="tarjeta">
+<div class="metricas">
+<div class="metrica"><div class="valor" id="v-inicial">—</div><div class="bs" id="b-inicial"></div><div class="etiqueta">Inicial a pagar</div></div>
+<div class="metrica"><div class="valor" id="v-cuotas">—</div><div class="etiqueta">Cuotas</div></div>
+<div class="metrica"><div class="valor" id="v-cuota">—</div><div class="bs" id="b-cuota"></div><div class="etiqueta">Monto por cuota</div></div>
+<div class="metrica"><div class="valor" id="v-financiado">—</div><div class="bs" id="b-financiado"></div><div class="etiqueta">Total financiado</div></div>
+</div>
+</div>
+
+<p class="nota" id="nota-tasa" hidden></p>
+<p class="nota">Cotización informativa. Las cuotas y la inicial disponibles dependen del perfil del cliente en Cashea; el monto final y la aprobación de las cuotas los confirma Cashea al momento de la compra.</p>
+</main>
+
+<script>
+(function () {
+  var CUOTAS_POSIBLES = [3,6,9,12];
+  var INICIAL_MIN = 0;
+  var INICIAL_MAX = 60;
+  var estado = {"precio":null,"tasa":null,"inicialPct":60,"cuotas":3};
+
+  function redondear(n) { return Math.round(n * 100) / 100; }
+
+  function calcular(precio, inicialPct, cuotasElegidas) {
+    var pct = Math.min(Math.max(inicialPct, INICIAL_MIN), INICIAL_MAX);
+    var validas = CUOTAS_POSIBLES.filter(function (c) { return c <= cuotasElegidas; });
+    var cuotas = validas.length > 0 ? validas[validas.length - 1] : CUOTAS_POSIBLES[0];
+    var montoInicial = redondear((precio * pct) / 100);
+    var montoFinanciado = redondear(precio - montoInicial);
+    var montoCuota = redondear(montoFinanciado / cuotas);
+    return { montoInicial: montoInicial, montoFinanciado: montoFinanciado, cuotas: cuotas, montoCuota: montoCuota };
+  }
+
+  function formatearUsd(monto) {
+    return "$" + monto.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  var elPrecio = document.getElementById("precio");
+  var elInicial = document.getElementById("inicial");
+  var elInicialPct = document.getElementById("v-inicial-pct");
+  var elCuotas = document.getElementById("cuotas");
+  var elVInicial = document.getElementById("v-inicial");
+  var elVCuotas = document.getElementById("v-cuotas");
+  var elVCuota = document.getElementById("v-cuota");
+  var elVFinanciado = document.getElementById("v-financiado");
+  var elBInicial = document.getElementById("b-inicial");
+  var elBCuota = document.getElementById("b-cuota");
+  var elBFinanciado = document.getElementById("b-financiado");
+
+  var elNotaTasa = document.getElementById("nota-tasa");
+
+  function pintarTasa() {
+    if (!estado.tasa) return;
+    var fecha = "";
+    var instante = Date.parse(estado.tasa.fecha);
+    if (!isNaN(instante)) {
+      var dia = new Date(instante - 4 * 3600000).toISOString().slice(0, 10).split("-");
+      fecha = " del " + dia[2] + "/" + dia[1] + "/" + dia[0];
+    }
+    elNotaTasa.textContent = "Bolívares a la tasa oficial del BCV" + fecha + ": Bs. " +
+      estado.tasa.bolivaresPorDolar.toLocaleString("es-VE", { maximumFractionDigits: 4 }) +
+      " por dólar. Fuente: DolarApi (dolarapi.com).";
+    elNotaTasa.hidden = false;
+  }
+
+  function traerTasa() {
+    if (typeof fetch !== "function") return;
+    fetch("https://ve.dolarapi.com/v1/dolares/oficial")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var promedio = d ? Number(d.promedio) : NaN;
+        if (d && d.promedio !== null && isFinite(promedio) && promedio > 0) {
+          estado.tasa = { bolivaresPorDolar: promedio, fecha: String(d.fechaActualizacion || "") };
+          pintarTasa();
+          recalcular();
+        }
+      })
+      .catch(function () {});
+  }
+
+  function formatearBs(dolares) {
+    var bs = redondear(dolares * estado.tasa.bolivaresPorDolar);
+    return "Bs. " + bs.toLocaleString("es-VE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  if (estado.precio !== null) elPrecio.value = estado.precio;
+
+  elInicial.value = estado.inicialPct;
+  elInicialPct.textContent = estado.inicialPct + "%";
+  elInicial.addEventListener("input", function (e) {
+    estado.inicialPct = Number(e.target.value);
+    elInicialPct.textContent = estado.inicialPct + "%";
+    recalcular();
+  });
+
+  function pintarCuotas() {
+    elCuotas.innerHTML = "";
+    CUOTAS_POSIBLES.forEach(function (c) {
+      var boton = document.createElement("button");
+      boton.type = "button";
+      boton.textContent = c + " cuotas";
+      if (c === estado.cuotas) boton.className = "activo";
+      boton.addEventListener("click", function () {
+        estado.cuotas = c;
+        pintarCuotas();
+        recalcular();
+      });
+      elCuotas.appendChild(boton);
+    });
+  }
+
+  function recalcular() {
+    var precio = Number(String(elPrecio.value).replace(",", "."));
+    var valido = elPrecio.value.trim() !== "" && isFinite(precio) && precio > 0;
+    if (!valido) {
+      elVInicial.textContent = elVCuotas.textContent = elVCuota.textContent = elVFinanciado.textContent = "—";
+      elBInicial.textContent = elBCuota.textContent = elBFinanciado.textContent = "";
+      return;
+    }
+    var r = calcular(precio, estado.inicialPct, estado.cuotas);
+    elVInicial.textContent = formatearUsd(r.montoInicial);
+    elVCuotas.textContent = String(r.cuotas);
+    elVCuota.textContent = formatearUsd(r.montoCuota);
+    elVFinanciado.textContent = formatearUsd(r.montoFinanciado);
+    if (estado.tasa) {
+      elBInicial.textContent = formatearBs(r.montoInicial);
+      elBCuota.textContent = formatearBs(r.montoCuota);
+      elBFinanciado.textContent = formatearBs(r.montoFinanciado);
+    }
+  }
+
+  elPrecio.addEventListener("input", recalcular);
+
+  pintarCuotas();
+  pintarTasa();
+  recalcular();
+  traerTasa();
+})();
+</script>
+</body>
+</html>

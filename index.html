@@ -58,6 +58,11 @@ input[type="range"] { flex: 1; }
 .metrica .bs { font-weight: 600; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .metrica .etiqueta { color: var(--tenue); font-size: 0.78rem; }
 .nota { color: var(--tenue); font-size: 0.75rem; }
+.niveles h2 { font-size: 0.9rem; margin: 0 0 0.5rem; }
+.niveles table { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.niveles th { text-align: left; color: var(--tenue); font-weight: 600; font-size: 0.78rem; padding: 0 0 0.3rem; }
+.niveles td { padding: 0.3rem 0; border-top: 1px solid var(--borde); }
+.niveles th:last-child, .niveles td:last-child { text-align: right; }
 </style>
 </head>
 <body>
@@ -92,6 +97,21 @@ input[type="range"] { flex: 1; }
 <div class="metrica"><div class="valor" id="v-cuota">—</div><div class="bs" id="b-cuota"></div><div class="etiqueta">Monto por cuota</div></div>
 <div class="metrica"><div class="valor" id="v-financiado">—</div><div class="bs" id="b-financiado"></div><div class="etiqueta">Total financiado</div></div>
 </div>
+</div>
+
+<div class="tarjeta niveles">
+<h2>Inicial mínima por nivel</h2>
+<table>
+<thead><tr><th>Nivel del cliente</th><th>Inicial desde</th></tr></thead>
+<tbody>
+<tr><td>Nivel 1</td><td>60%</td></tr>
+<tr><td>Nivel 2</td><td>50%</td></tr>
+<tr><td>Nivel 3</td><td>30%</td></tr>
+<tr><td>Nivel 4</td><td>25%</td></tr>
+<tr><td>Nivel 5</td><td>20%</td></tr>
+<tr><td>Nivel 6</td><td>20%</td></tr>
+</tbody>
+</table>
 </div>
 
 <p class="nota" id="nota-tasa" hidden></p>
